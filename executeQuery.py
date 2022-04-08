@@ -1,5 +1,3 @@
-# db authentication parameters
-# import logging
 import os
 from datetime import datetime
 import logging
@@ -14,7 +12,7 @@ dbName = os.getenv('dbName')
 dbUser = os.getenv('dbUser')
 dbPassword = os.getenv('dbPassword')
 
-
+# getting the path of current file 
 dirPath = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(dirPath, 'testLog.log')
 
@@ -46,9 +44,11 @@ def executeQuery():
                 notify.post_to_slack_channel("query Executed successfully","pyscript")
 
             except Exception as e:
-                print(e + "cursor execution failed")
+                print(e , "cursor execution failed")
+                return e
         except Exception as e:
-            print(e + "cursor thread creation faled")
+            print(e , "cursor thread creation faled")
+            return e
 
         #making changes persistant in the database
         conn.commit()
@@ -56,7 +56,9 @@ def executeQuery():
         #terminating the thread and connections
         cur.close()
         conn.close()
+        return "success"
     except Exception as e:
         notify.post_to_slack_channel("connection failed","pyscript")
         logger.error(e, "connection failed")
-    
+        return e
+        
